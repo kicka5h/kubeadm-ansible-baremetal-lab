@@ -1,0 +1,7 @@
+name: kubeadm-ansible-baremetal-lab
+runtime:
+  name: python
+  options:
+    toolchain: pip
+    virtualenv: venv
+description: A self-managed Kubernetes lab that provisions raw VMs via Pulumi
