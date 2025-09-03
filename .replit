@@ -24,7 +24,7 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "echo \"✓ Empty Pulumi project structure ready\" && echo \"✓ Python virtual environment configured\" && echo \"✓ Pulumi stack 'dev' initialized\" && echo \"Ready for your bootstrap command!\""
+args = "cd kubeadm-ansible-baremetal-lab && echo \"🚀 Kubernetes Baremetal Lab Project\" && echo \"📁 Structure: Pulumi + Ansible + CI/CD\" && echo \"🔧 Ansible: Kubernetes 1.29.0 + Cilium CNI\" && echo \"☁️  Pulumi: VM provisioning (scaffold ready)\" && echo \"✅ Ready for development!\""
 
 [workflows.workflow.metadata]
 outputType = "console"
