@@ -27,3 +27,7 @@ ENV/
 
 # Pulumi
 .pulumi/
+
+# Replit
+.replit
+replit.md
