@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Ansible
+*.retry
+ansible/.cache/
+ansible/inventories/dynamic.json
+*.vault
+
+# Pulumi
+Pulumi.*.yaml
+pulumi/.pulumi/
+pulumi/.venv/
+pulumi/venv/
+pulumi/__pycache__/
+
+# Replit
+.replit
+**/.pythonlibs
+
+# Misc
+.DS_Store
+.idea/
+.vscode/

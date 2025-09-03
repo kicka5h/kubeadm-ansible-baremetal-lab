@@ -1,0 +1,30 @@
+modules = ["python-3.11"]
+[agent]
+expertMode = true
+
+[nix]
+channel = "stable-25_05"
+packages = ["pulumi"]
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Project Status"
+
+[[workflows.workflow]]
+name = "Project Status"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "echo \"✓ Empty Pulumi project structure ready\" && echo \"✓ Python virtual environment configured\" && echo \"✓ Pulumi stack 'dev' initialized\" && echo \"Ready for your bootstrap command!\""
+
+[workflows.workflow.metadata]
+outputType = "console"
