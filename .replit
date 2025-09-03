@@ -16,15 +16,15 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "Project Status"
+args = "Kubernetes Lab"
 
 [[workflows.workflow]]
-name = "Project Status"
+name = "Kubernetes Lab"
 author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd kubeadm-ansible-baremetal-lab && echo \"🚀 Kubernetes Baremetal Lab Project\" && echo \"📁 Structure: Pulumi + Ansible + CI/CD\" && echo \"🔧 Ansible: Kubernetes 1.29.0 + Cilium CNI\" && echo \"☁️  Pulumi: VM provisioning (scaffold ready)\" && echo \"✅ Ready for development!\""
+args = "cd kubeadm-ansible-baremetal-lab && echo \"🚀 Kubernetes Baremetal Lab Project\" && echo \"\" && echo \"📋 Available Commands:\" && echo \"  • make lint          - Run ansible-lint checks\" && echo \"  • ansible-playbook   - Run Ansible playbooks from ./ansible/\" && echo \"  • pulumi preview     - Preview infrastructure changes (requires PULUMI_ACCESS_TOKEN)\" && echo \"  • pulumi up          - Deploy infrastructure (requires PULUMI_ACCESS_TOKEN)\" && echo \"\" && echo \"📁 Project Structure:\" && echo \"  • ./ansible/         - Kubernetes cluster configuration (Ansible)\" && echo \"  • ./pulumi/          - VM provisioning (Pulumi + Python)\" && echo \"  • ./docs/            - Architecture documentation\" && echo \"\" && echo \"🔧 Current Status:\" && echo \"  ✅ Ansible installed and tested\" && echo \"  ✅ Python dependencies installed\" && echo \"  ✅ Pulumi installed (needs authentication)\" && echo \"\" && echo \"💡 Next Steps:\" && echo \"  1. Set PULUMI_ACCESS_TOKEN environment variable\" && echo \"  2. Configure cloud provider in ./pulumi/\" && echo \"  3. Add kubeadm roles to ./ansible/\" && echo \"  4. Run the full deployment pipeline\""
 
 [workflows.workflow.metadata]
 outputType = "console"
