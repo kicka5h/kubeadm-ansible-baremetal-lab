@@ -1,0 +1,82 @@
+name: Deploy Kubernetes Cluster
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy Infrastructure and Configure Cluster
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        cd pulumi
+        pip install -r requirements.txt
+        pip install ansible ansible-lint
+        
+    - name: Set up Pulumi CLI
+      uses: pulumi/actions@v4
+      with:
+        command: version
+        
+    - name: Configure SSH key
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keygen -y -f ~/.ssh/id_rsa > ~/.ssh/id_rsa.pub
+        
+    - name: Configure Pulumi
+      env:
+        PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+      run: |
+        cd pulumi
+        pulumi login
+        pulumi stack select dev || pulumi stack init dev
+        pulumi config set digitalocean:token ${{ secrets.DIGITALOCEAN_TOKEN }}
+        pulumi config set ssh_public_key "$(cat ~/.ssh/id_rsa.pub)"
+        
+    - name: Provision infrastructure
+      env:
+        PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+      run: |
+        cd pulumi
+        pulumi up --yes --skip-preview
+        
+    - name: Generate dynamic inventory
+      run: |
+        cd ansible/inventories
+        python3 generate_inventory.py
+        
+    - name: Wait for VMs to be ready
+      run: |
+        echo "Waiting for VMs to boot and SSH to be available..."
+        sleep 60
+        
+    - name: Configure cluster with Ansible
+      run: |
+        cd ansible
+        export ANSIBLE_HOST_KEY_CHECKING=False
+        ansible-playbook -i inventories/dynamic.json site.yml
+        
+    - name: Get cluster info
+      run: |
+        cd pulumi
+        echo "=== Cluster Information ==="
+        pulumi stack output master_ip
+        pulumi stack output worker_ips
+        echo "=== Next Steps ==="
+        echo "SSH to master: ssh root@$(pulumi stack output master_ip)"
+        echo "Check cluster: kubectl get nodes"

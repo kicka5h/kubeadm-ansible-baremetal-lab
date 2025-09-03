@@ -1,0 +1,44 @@
+name: Cleanup Kubernetes Cluster
+
+on:
+  workflow_dispatch:
+
+jobs:
+  cleanup:
+    name: Destroy Infrastructure
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        cd pulumi
+        pip install -r requirements.txt
+        
+    - name: Set up Pulumi CLI
+      uses: pulumi/actions@v4
+      with:
+        command: version
+        
+    - name: Configure Pulumi and destroy resources
+      env:
+        PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+      run: |
+        cd pulumi
+        pulumi login
+        pulumi stack select dev
+        pulumi config set digitalocean:token ${{ secrets.DIGITALOCEAN_TOKEN }}
+        pulumi destroy --yes --skip-preview
+        
+    - name: Cleanup confirmation
+      run: |
+        echo "=== Cleanup Complete ==="
+        echo "All Digital Ocean resources have been destroyed."
