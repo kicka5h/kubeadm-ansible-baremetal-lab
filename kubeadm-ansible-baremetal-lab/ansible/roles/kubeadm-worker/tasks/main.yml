@@ -1,0 +1,16 @@
+---
+- name: Check if node has already joined cluster
+  stat:
+    path: /etc/kubernetes/kubelet.conf
+  register: kubelet_conf_exists
+
+- name: Join worker node to cluster
+  shell: "{{ hostvars[groups['masters'][0]]['kubeadm_join_command'] }}"
+  register: kubeadm_join
+  when: not kubelet_conf_exists.stat.exists
+
+- name: Verify kubelet is running
+  systemd:
+    name: kubelet
+    state: started
+    enabled: yes

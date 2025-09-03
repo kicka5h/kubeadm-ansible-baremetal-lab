@@ -1,0 +1,44 @@
+---
+- name: Check if kubeadm has already run
+  stat:
+    path: /etc/kubernetes/admin.conf
+  register: kubeadm_already_run
+
+- name: Initialize Kubernetes cluster
+  shell: |
+    kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address={{ ansible_default_ipv4.address }}
+  register: kubeadm_init
+  when: not kubeadm_already_run.stat.exists
+
+- name: Create kubeconfig directory for root
+  file:
+    path: /root/.kube
+    state: directory
+    mode: '0755'
+
+- name: Copy admin.conf to user's kube config
+  copy:
+    src: /etc/kubernetes/admin.conf
+    dest: /root/.kube/config
+    remote_src: yes
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Install Cilium CNI
+  shell: |
+    curl -LO https://github.com/cilium/cilium-cli/releases/latest/download/cilium-linux-amd64.tar.gz
+    tar xzf cilium-linux-amd64.tar.gz
+    mv cilium /usr/local/bin/
+    cilium install
+  when: cni == "cilium"
+
+- name: Get join command
+  shell: kubeadm token create --print-join-command
+  register: join_command
+  when: kubeadm_init is succeeded
+
+- name: Set join command fact
+  set_fact:
+    kubeadm_join_command: "{{ join_command.stdout }}"
+  when: join_command is defined

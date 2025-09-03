@@ -1,3 +1,3 @@
 .PHONY: lint
 lint:
-\tansible-lint ansible || true
+	ansible-lint ansible || true

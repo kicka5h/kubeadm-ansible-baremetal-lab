@@ -1,3 +1,2 @@
 pulumi>=3.120.0
-# add a provider later, e.g.:
-# pulumi-digitalocean
+pulumi-digitalocean>=4.0.0

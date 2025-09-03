@@ -1,7 +1,17 @@
-- name: (Scaffold) Placeholder play to validate CI
-  hosts: localhost
-  gather_facts: false
-  tasks:
-    - name: Show scaffold message
-      ansible.builtin.debug:
-        msg: "Ansible skeleton ready. Add kubeadm roles next."
+- name: Prepare all nodes
+  hosts: all
+  become: yes
+  roles:
+    - common
+
+- name: Configure Kubernetes master
+  hosts: masters
+  become: yes
+  roles:
+    - kubeadm-master
+
+- name: Configure Kubernetes workers  
+  hosts: workers
+  become: yes
+  roles:
+    - kubeadm-worker
